@@ -7,14 +7,13 @@
 package com.mirbor.blurpreview
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.ViewGroup
 import kotlin.math.roundToInt
 
 
@@ -38,6 +37,36 @@ object NativeBlur {
         } catch (e: Exception) {
            e.printStackTrace()
         }
+    }
+
+    fun getBlurredBackgroundBitmap(activity: Activity, includeStatusbar: Boolean = false): Bitmap? {
+        val decorView = activity.window.decorView
+        val rootView = (decorView.rootView as ViewGroup).getChildAt(0)
+
+        val internalBitmap = Bitmap.createBitmap(
+            rootView.width,
+            rootView.height,
+            Bitmap.Config.ARGB_8888
+        )
+
+        val internalCanvas = Canvas(internalBitmap)
+
+        decorView.background.draw(internalCanvas)
+
+        rootView.draw(internalCanvas)
+
+        val croppedBpm = Bitmap.createBitmap(
+            internalBitmap,
+            0, if (includeStatusbar) AndroidUtils.getStatusBarHeight() else 0,
+            internalBitmap.width,
+            internalBitmap.height - if (includeStatusbar) {
+                AndroidUtils.getStatusBarHeight()
+            } else {
+                0
+            }
+        )
+
+        return blurBitmap(croppedBpm)
     }
 
     /**

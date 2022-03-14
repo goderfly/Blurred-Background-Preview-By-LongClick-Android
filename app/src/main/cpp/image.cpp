@@ -36,7 +36,7 @@ gatherPositions(std::vector<std::pair<float, float>> list, int phase) {
 
 thread_local static float *pixelCache = nullptr;
 
-JNIEXPORT void Java_com_example_myapplication_AndroidUtils_generateGradient(JNIEnv *env,
+JNIEXPORT void Java_com_mirbor_blurpreview_AndroidUtils_generateGradient(JNIEnv *env,
                                                                             jobject clazz,
                                                                             jobject bitmap,
                                                                             jboolean unpin,
