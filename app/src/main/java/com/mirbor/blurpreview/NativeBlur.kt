@@ -26,8 +26,6 @@ object NativeBlur {
 
     private var initialized: Boolean = false
     private const val LIBRARY_NAME: String = "blurlib"
-    var cachedBackground: Drawable? = null
-
 
 
     init {
@@ -57,9 +55,9 @@ object NativeBlur {
 
         val croppedBpm = Bitmap.createBitmap(
             internalBitmap,
-            0, if (includeStatusbar) AndroidUtils.getStatusBarHeight() else 0,
+            0, if (!includeStatusbar) AndroidUtils.getStatusBarHeight() else 0,
             internalBitmap.width,
-            internalBitmap.height - if (includeStatusbar) {
+            internalBitmap.height - if (!includeStatusbar) {
                 AndroidUtils.getStatusBarHeight()
             } else {
                 0
@@ -77,7 +75,7 @@ object NativeBlur {
      * @param radius   The radius of the blur grate than 1
      * @param compress   The compress config to return
      */
-    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 10, compress: Boolean = true): Bitmap? {
+    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 5, compress: Boolean = true): Bitmap? {
         if (!initialized) {
             Log.e("NativeBlur", "First init blur lib.")
             return null

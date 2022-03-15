@@ -25,9 +25,9 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.button.setOnLongClickListener {
-            val bmp = getBlurredBackgroundBitmap(requireActivity())
 
-            PlaygroundFragment.newInstance(bmp!!).show(parentFragmentManager, PlaygroundFragment.TAG)
+
+            PlaygroundFragment.newInstance().show(parentFragmentManager, PlaygroundFragment.TAG)
 
             return@setOnLongClickListener true
         }
