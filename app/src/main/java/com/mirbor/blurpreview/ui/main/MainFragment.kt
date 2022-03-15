@@ -1,18 +1,12 @@
 package com.mirbor.blurpreview.ui.main
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.mirbor.blurpreview.AndroidUtils.getStatusBarHeight
-import com.mirbor.blurpreview.NativeBlur
 import com.mirbor.blurpreview.NativeBlur.getBlurredBackgroundBitmap
-import com.mirbor.blurpreview.R
+import com.mirbor.blurpreview.PlaygroundFragment
 import com.mirbor.blurpreview.databinding.MainFragmentBinding
 
 class MainFragment : Fragment() {
@@ -33,10 +27,7 @@ class MainFragment : Fragment() {
         binding.button.setOnLongClickListener {
             val bmp = getBlurredBackgroundBitmap(requireActivity())
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, BlurredFragment.newInstance(bmp))
-                .addToBackStack("main")
-                .commit()
+            PlaygroundFragment.newInstance(bmp!!).show(parentFragmentManager, PlaygroundFragment.TAG)
 
             return@setOnLongClickListener true
         }
