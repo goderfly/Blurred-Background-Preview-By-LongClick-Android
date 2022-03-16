@@ -75,7 +75,7 @@ object NativeBlur {
      * @param radius   The radius of the blur grate than 1
      * @param compress   The compress config to return
      */
-    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 5, compress: Boolean = true): Bitmap? {
+    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 8, compress: Boolean = true): Bitmap? {
         if (!initialized) {
             Log.e("NativeBlur", "First init blur lib.")
             return null
