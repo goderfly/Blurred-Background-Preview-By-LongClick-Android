@@ -3,7 +3,6 @@ package com.mirbor.blurpreview
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
-import com.mirbor.blurpreview.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
