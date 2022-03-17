@@ -11,7 +11,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.ViewGroup
 import kotlin.math.roundToInt
@@ -37,9 +36,14 @@ object NativeBlur {
         }
     }
 
-    fun getBlurredBackgroundBitmap(activity: Activity, includeStatusbar: Boolean = false): Bitmap? {
+    @Throws(RuntimeException::class)
+    fun getBlurredBackgroundBitmap(activity: Activity, includeStatusbar: Boolean = false): Bitmap {
         val decorView = activity.window.decorView
         val rootView = (decorView.rootView as ViewGroup).getChildAt(0)
+
+        if (rootView.width <= 0 || rootView.height <= 0) {
+            throw RuntimeException("Uncorrected rootView of activity!")
+        }
 
         val internalBitmap = Bitmap.createBitmap(
             rootView.width,
@@ -74,11 +78,13 @@ object NativeBlur {
      * @param sourceBitmap    The source bitmap must blurred
      * @param radius   The radius of the blur grate than 1
      * @param compress   The compress config to return
+     * @throws RuntimeException When error at init of lib or native process of blurring
      */
-    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 8, compress: Boolean = true): Bitmap? {
+
+    @Throws(RuntimeException::class)
+    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 8, compress: Boolean = true): Bitmap {
         if (!initialized) {
-            Log.e("NativeBlur", "First init blur lib.")
-            return null
+            throw RuntimeException("First init NativeBlur lib.")
         }
         val startTime = System.currentTimeMillis()
         val result: Int
@@ -112,7 +118,11 @@ object NativeBlur {
             logResult(result, startTime, radius, compress)
         }
 
-        return if (result == 1) finalBitmap else null
+        return if (result == 1) {
+            finalBitmap
+        } else {
+            throw RuntimeException("Process of blurring failed")
+        }
     }
 
     /**

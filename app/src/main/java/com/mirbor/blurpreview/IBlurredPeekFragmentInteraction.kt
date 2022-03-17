@@ -3,7 +3,7 @@ package com.mirbor.blurpreview
 import android.view.View
 
 interface IBlurredPeekFragmentInteraction {
-    fun onDismiss()
-    fun onMaximize()
-    fun onInteractWithView(view: View)
+    fun onPeekDismiss()
+    fun onPeekMaximize()
+    fun onPeekInteractWithView(view: View)
 }

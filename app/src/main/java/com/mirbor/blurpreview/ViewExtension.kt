@@ -8,45 +8,63 @@ import androidx.fragment.app.FragmentManager
 
 
 @SuppressLint("ClickableViewAccessibility")
-fun View.showBlurredPeekFragment(
+fun View.setBlurredPeekFragment(
     fragmentManager: FragmentManager,
-    fragment: FullscreenDialogFragment,
-    callback: IBlurredPeekFragmentInteraction
+    fragment: FullscreenDialogFragment
 ) {
     var lastY = 0f
     var startY = 0f
     var isReachMaximizedState = false
 
     setOnLongClickListener {
-        fragment
-            .setInteractionCallback(callback)
-            .show(fragmentManager, fragment.javaClass.name)
         startY = lastY
+        fragment.show(fragmentManager, fragment.javaClass.name)
         return@setOnLongClickListener true
     }
 
-    setOnTouchListener { view, motionEvent ->
+    setOnTouchListener { _, motionEvent ->
         lastY = motionEvent.y
 
-        if (motionEvent.action == MotionEvent.ACTION_UP) {
-            isReachMaximizedState = false
-            callback.onDismiss()
-        } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            val dy = startY - lastY
+        when (motionEvent.action) {
 
-            if (dy > 400 && !isReachMaximizedState) {
-                callback.onMaximize()
-                Log.d("Bluuur", "dy > 400")
-                isReachMaximizedState = true
+            MotionEvent.ACTION_UP -> {
+                isReachMaximizedState = false
+                fragment.onPeekDismiss()
+                return@setOnTouchListener true
             }
-        } else {
-            Log.d("Bluuur", "ELESEEEEEEEEEE")
+
+            MotionEvent.ACTION_MOVE -> {
+                fragment.onChangePeekCoordrinates(motionEvent.rawX, motionEvent.rawY)
+                val dy = startY - lastY
+                if (dy > 400 && !isReachMaximizedState) {
+                    fragment.onPeekMaximize()
+                    isReachMaximizedState = true
+                    return@setOnTouchListener true
+                }
+            }
+
         }
         return@setOnTouchListener false
     }
 
 }
 
-fun View.recreateTouchListener() {
 
+fun View.isIntersectWith(
+    rawX: Float,
+    rawY: Float,
+    wPercent: Int = 100,
+    hPercent: Int = 100
+): Boolean {
+    val location = IntArray(2)
+    this.getLocationOnScreen(location)
+    val x = location[0]
+    val y = location[1]
+
+    val width: Int = this.width
+    val height: Int = this.height
+    val calculatedWith = width * (wPercent / 100)
+    val calculatedHeight = height * (hPercent / 100)
+    //Check the intersection of point with rectangle achieved
+    return !(rawX < x || rawY > x + calculatedWith || rawY < y || rawY > y + calculatedHeight)
 }

@@ -6,72 +6,29 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
 
 
-abstract class FullscreenDialogFragment() : DialogFragment() {
-    private lateinit var interactionCallback: IBlurredPeekFragmentInteraction
-    private lateinit var bmp: Bitmap
+abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
+    private lateinit var bmpBackground: Bitmap
+    private var wPercent: Int = 100
+    private var hPercent: Int = 100
+    private var currentIntersectedViews: MutableSet<View> = mutableSetOf()
 
+    internal fun setAreaOfViewsToPeekInteract(withPercent: Int, heightPercent: Int) {
+        this.wPercent = withPercent
+        this.hPercent = heightPercent
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bmp = NativeBlur.getBlurredBackgroundBitmap(requireActivity())!!
-    }
-
-    fun setInteractionCallback(callback: IBlurredPeekFragmentInteraction): FullscreenDialogFragment  {
-        interactionCallback = callback
-        return this
-    }
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        /*view.parent.requestDisallowInterceptTouchEvent(true)
-        view.parent.parent.requestDisallowInterceptTouchEvent(true)
-        view.parent.parent.parent.requestDisallowInterceptTouchEvent(true)
-        *//*root.setOnTouchListener { view, motionEvent ->
-            Log.d("Bluuur", "view $view event $motionEvent")
-            return@setOnTouchListener true
-        }*//*
-        view.parent.apply {
-           val firstView = (this as ViewGroup).getChildAt(0)
-            removeViewAt(0)
-            addView(InterceptTouchFrameLayout(activity).apply {
-                isClickable = true
-                isFocusable = true
-                setOnInterceptTouchEventListener(object :
-                    InterceptTouchFrameLayout.OnInterceptTouchEventListener {
-                    override fun onInterceptTouchEvent(
-                        view: InterceptTouchFrameLayout?,
-                        ev: MotionEvent?,
-                        disallowIntercept: Boolean
-                    ): Boolean {
-                        Log.d("Bluuur", "view $view event $ev")
-                        return false
-                    }
-
-                    override fun onTouchEvent(
-                        view: InterceptTouchFrameLayout?,
-                        event: MotionEvent?
-                    ): Boolean {
-                        Log.d("Bluuur", "view $view event $event")
-                        return false
-                    }
-                })
-                addView(firstView)
-            })
-        }*/
-
+        bmpBackground = NativeBlur.getBlurredBackgroundBitmap(requireActivity())
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-
         val root = RelativeLayout(activity)
         root.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -89,11 +46,32 @@ abstract class FullscreenDialogFragment() : DialogFragment() {
 
             window?.apply {
                 addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                setBackgroundDrawable(bmp.toDrawable(requireContext().resources))
+                setBackgroundDrawable(bmpBackground.toDrawable(requireContext().resources))
                 setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 setDimAmount(0f)
             }
+        }
+    }
 
+    internal fun onChangePeekCoordrinates(x: Float, y: Float) {
+        if (isResumed) {
+            (view as? ViewGroup)?.children?.forEach {
+                if (it.isIntersectWith(
+                        rawX = x,
+                        rawY = y,
+                        wPercent = wPercent,
+                        hPercent = hPercent
+                    )
+                ) {
+                    //Для исключения множественной сработки коллбека, сравниваем на повторный хит
+                    if (!currentIntersectedViews.contains(it)) {
+                        currentIntersectedViews.add(it)
+                        onPeekInteractWithView(it)
+                    }
+                } else {
+                    currentIntersectedViews.remove(it)
+                }
+            }
         }
     }
 }

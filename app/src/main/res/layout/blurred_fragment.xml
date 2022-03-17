@@ -4,16 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:padding="46dp"
-    android:layout_width="300dp"
-    android:layout_height="300dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
+        android:layout_marginTop="96dp"
         android:text="Заблюренный фрагмент"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.524"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
