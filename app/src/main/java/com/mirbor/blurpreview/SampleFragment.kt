@@ -2,9 +2,11 @@ package com.mirbor.blurpreview
 
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 
 
 class SampleFragment : FullscreenDialogFragment() {
@@ -25,6 +27,14 @@ class SampleFragment : FullscreenDialogFragment() {
 
     override fun onPeekInteractWithView(view: View) {
         Log.d("Bluuur", "interact with view $view")
+        view.performHapticFeedback(
+            HapticFeedbackConstants.VIRTUAL_KEY,
+            HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING  // Ignore device's setting. Otherwise, you can use FLAG_IGNORE_VIEW_SETTING to ignore view's setting.
+        );
+    }
+
+    override fun onPeekChooseView(view: View) {
+        Toast.makeText(requireContext(), "Вы выбрали ${view.toString().substringAfterLast(":id/")}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPeekDismiss() {

@@ -6,4 +6,5 @@ interface IBlurredPeekFragmentInteraction {
     fun onPeekDismiss()
     fun onPeekMaximize()
     fun onPeekInteractWithView(view: View)
+    fun onPeekChooseView(view: View)
 }

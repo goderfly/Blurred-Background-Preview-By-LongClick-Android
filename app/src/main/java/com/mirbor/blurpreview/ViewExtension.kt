@@ -30,6 +30,11 @@ fun View.setBlurredPeekFragment(
             MotionEvent.ACTION_UP -> {
                 isReachMaximizedState = false
                 fragment.onPeekDismiss()
+                val curView = fragment.currentIntersectedView
+                Log.d("Bluuur", "fragment.currentIntersectedView: $curView")
+                curView?.let {
+                    fragment.onPeekChooseView(it)
+                }
                 return@setOnTouchListener true
             }
 
@@ -51,10 +56,10 @@ fun View.setBlurredPeekFragment(
 
 
 fun View.isIntersectWith(
-    rawX: Float,
-    rawY: Float,
-    wPercent: Int = 100,
-    hPercent: Int = 100
+    rawX: Int,
+    rawY: Int,
+    horDetectPadding: Int = 0,
+    verDetectPadding: Int = 0
 ): Boolean {
     val location = IntArray(2)
     this.getLocationOnScreen(location)
@@ -63,8 +68,15 @@ fun View.isIntersectWith(
 
     val width: Int = this.width
     val height: Int = this.height
-    val calculatedWith = width * (wPercent / 100)
-    val calculatedHeight = height * (hPercent / 100)
+    val calculatedWidth = width - (horDetectPadding * 2)
+    val calculatedHeight = height - (verDetectPadding * 2)
     //Check the intersection of point with rectangle achieved
-    return !(rawX < x || rawY > x + calculatedWith || rawY < y || rawY > y + calculatedHeight)
+    val calculatedWidthRange = (x + horDetectPadding) .. (x + horDetectPadding + calculatedWidth)
+    val calculatedHeightRange = (y + verDetectPadding) .. (y + verDetectPadding + calculatedHeight)
+
+    return rawX in calculatedWidthRange && rawY in calculatedHeightRange
 }
+// ш 125
+// жо 50
+// 25 50 25
+// rawY 1535 > x 288 + calculatedWith 865
