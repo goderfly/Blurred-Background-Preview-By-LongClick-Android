@@ -4,7 +4,8 @@ import android.view.View
 
 interface IBlurredPeekFragmentInteraction {
     fun onPeekDismiss()
-    fun onPeekMaximize()
+    fun onPeekMaximizeSwipe(yAxisOffset: Int)
+    fun onPeekMaximized()
     fun onPeekInteractWithView(view: View)
     fun onPeekChooseView(view: View)
 }

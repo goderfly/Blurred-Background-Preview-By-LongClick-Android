@@ -5,46 +5,70 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.mirbor.blurpreview.AndroidUtils.dp
 
 
 @SuppressLint("ClickableViewAccessibility")
 fun View.setBlurredPeekFragment(
     fragmentManager: FragmentManager,
-    fragment: FullscreenDialogFragment
+    fragment: FullscreenDialogFragment,
+    swipeIgnoreBottomPadding: Int = 14.dp
 ) {
-    var lastY = 0f
-    var startY = 0f
+    //var lastY = 0f
+    //var startY = 0f
+    var startRowY = 0
+    var lastRowY = 0
     var isReachMaximizedState = false
+    var calculatedSwipeIgnoreBottomPadding = 0
 
     setOnLongClickListener {
-        startY = lastY
+        //startRowY = lastRowY
+        calculatedSwipeIgnoreBottomPadding = 0
         fragment.show(fragmentManager, fragment.javaClass.name)
         return@setOnLongClickListener true
     }
 
     setOnTouchListener { _, motionEvent ->
-        lastY = motionEvent.y
+        //lastY = motionEvent.y
+        lastRowY = motionEvent.rawY.toInt()
 
         when (motionEvent.action) {
-
+            MotionEvent.ACTION_DOWN -> {
+                startRowY = motionEvent.rawY.toInt()
+            }
             MotionEvent.ACTION_UP -> {
-                isReachMaximizedState = false
-                fragment.onPeekDismiss()
-                val curView = fragment.currentIntersectedView
-                Log.d("Bluuur", "fragment.currentIntersectedView: $curView")
-                curView?.let {
-                    fragment.onPeekChooseView(it)
+                if (fragment.isResumed) {
+                    isReachMaximizedState = false
+                    fragment.onPeekDismiss()
+                    val curView = fragment.currentIntersectedView
+                    curView?.let {
+                        fragment.onPeekChooseView(it)
+                    }
                 }
                 return@setOnTouchListener true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                fragment.onChangePeekCoordrinates(motionEvent.rawX, motionEvent.rawY)
-                val dy = startY - lastY
-                if (dy > 400 && !isReachMaximizedState) {
-                    fragment.onPeekMaximize()
-                    isReachMaximizedState = true
-                    return@setOnTouchListener true
+                if (fragment.isVisible) {
+                    if (calculatedSwipeIgnoreBottomPadding == 0 && startRowY > fragment.getYBottomRaw()) {
+                        calculatedSwipeIgnoreBottomPadding = fragment.getYBottomRaw() - swipeIgnoreBottomPadding
+                        startRowY = fragment.getYBottomRaw() - swipeIgnoreBottomPadding
+                    }
+                    fragment.onChangePeekCoordrinates(motionEvent.rawX, motionEvent.rawY)
+                    val diff = (startRowY  - lastRowY)
+
+                    Log.d("Bluuur", "" +
+                            "startRawY $startRowY" +
+                            " calculatedSwipeIgnoreBottomPadding ${calculatedSwipeIgnoreBottomPadding} " +
+                            "lastRawY $lastRowY")
+
+                    if (diff > 400 && !isReachMaximizedState) {
+                        fragment.onPeekMaximized()
+                        isReachMaximizedState = true
+                        return@setOnTouchListener true
+                    } else if (diff > 0) {
+                        fragment.onPeekMaximizeSwipe(diff)
+                    }
                 }
             }
 

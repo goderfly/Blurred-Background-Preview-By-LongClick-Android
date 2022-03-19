@@ -31,6 +31,11 @@ class MainFragment : Fragment() {
             fragmentManager = parentFragmentManager,
             fragment = fragment
         )
+
+        binding.button4.setBlurredPeekFragment(
+            fragmentManager = parentFragmentManager,
+            fragment = fragment
+        )
     }
 
     override fun onDestroyView() {

@@ -1,23 +1,20 @@
 package com.mirbor.blurpreview
 
-import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
+import com.mirbor.blurpreview.AndroidUtils.disallowClipForParents
 import com.mirbor.blurpreview.AndroidUtils.getChildViewListFromViewGroup
+import com.mirbor.blurpreview.AndroidUtils.getYBottomRaw
 import com.mirbor.blurpreview.AndroidUtils.getFirstViewFromViewGroup
 
 
 abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
-    var currentIntersectedView: View? = null
+    internal var currentIntersectedView: View? = null
     private lateinit var bmpBackground: Bitmap
     private var verDetectPadding: Int = 0
     private var horDetectPadding: Int = 0
@@ -60,14 +57,17 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
                 decorView.apply {
                     minimumWidth = requireActivity().window.decorView.width
                     minimumHeight = requireActivity().window.decorView.height
-                    getFirstViewFromViewGroup().apply {
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT
-                        ).apply {
-                            gravity = Gravity.CENTER
+
+                    getFirstViewFromViewGroup()
+                        .apply { disallowClipForParents() }
+                        .apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            ).apply {
+                                gravity = Gravity.CENTER
+                            }
                         }
-                    }
 
                 }
                 setBackgroundDrawable(bmpBackground.toDrawable(requireContext().resources))
@@ -79,9 +79,14 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+
     internal fun setViewsPeekDetectPadding(horDetectPadding: Int, verDetectPadding: Int) {
         this.verDetectPadding = horDetectPadding
         this.horDetectPadding = verDetectPadding
+    }
+
+    internal fun getYBottomRaw(): Int {
+        return view?.getYBottomRaw() ?: 0
     }
 
     override fun onDestroyView() {
@@ -90,24 +95,23 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
     }
 
     internal fun onChangePeekCoordrinates(x: Float, y: Float) {
-        if (isResumed) {
-            view?.getChildViewListFromViewGroup()?.forEach {
+        view?.getChildViewListFromViewGroup()?.forEach {
 
-                if (it.isIntersectWith(
-                        rawX = x.toInt(),
-                        rawY = y.toInt(),
-                        horDetectPadding = horDetectPadding,
-                        verDetectPadding = verDetectPadding
-                    )
-                ) {
+            if (it.isIntersectWith(
+                    rawX = x.toInt(),
+                    rawY = y.toInt(),
+                    horDetectPadding = horDetectPadding,
+                    verDetectPadding = verDetectPadding
+                )
+            ) {
 
-                    //Для исключения множественной сработки коллбека, сравниваем на повторный хит
-                    if (currentIntersectedView != it) {
-                        currentIntersectedView = it
-                        onPeekInteractWithView(it)
-                    }
+                //Для исключения множественной сработки коллбека, сравниваем на повторный хит
+                if (currentIntersectedView != it) {
+                    currentIntersectedView = it
+                    onPeekInteractWithView(it)
                 }
             }
         }
     }
 }
+

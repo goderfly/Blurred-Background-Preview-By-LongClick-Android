@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.mirbor.blurpreview.databinding.BlurredFragmentBinding
 
 
 class SampleFragment : FullscreenDialogFragment() {
+    private var _binding: BlurredFragmentBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -20,9 +23,10 @@ class SampleFragment : FullscreenDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.blurred_fragment, container, false)
+        _binding = BlurredFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onPeekInteractWithView(view: View) {
@@ -41,8 +45,20 @@ class SampleFragment : FullscreenDialogFragment() {
         dismiss()
     }
 
-    override fun onPeekMaximize() {
-        Log.d("Bluuur", "maximize")
+    override fun onPeekMaximizeSwipe(yAxisOffset: Int) {
+        Log.d("Bluuur", "onPeekMaximizeSwipe $yAxisOffset")
+        binding.root.translationY = -yAxisOffset.toFloat()
+    }
+
+    override fun onPeekMaximized() {
+        Log.d("Bluuur", "onPeekMaximized")
+        Toast.makeText(requireContext(), "onPeekMaximized", Toast.LENGTH_SHORT).show()
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
