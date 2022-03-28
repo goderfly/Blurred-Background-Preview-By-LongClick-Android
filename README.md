@@ -1,4 +1,6 @@
 # Blurred-Background-Preview-By-LongClick-Android
+![](https://jitpack.io/v/goderfly/Blurred-Background-Preview-By-LongClick-Android.svg)
+
 Открытие превью окна из фрагмента или вью, с заблюреным бекгроундом (Telegram and Instagram Like)
 
 https://user-images.githubusercontent.com/5620293/158074832-29cc7c8c-73b2-436a-954b-73658049d324.mp4
