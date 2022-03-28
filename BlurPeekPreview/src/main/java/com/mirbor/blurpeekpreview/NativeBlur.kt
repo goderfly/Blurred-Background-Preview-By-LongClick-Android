@@ -5,7 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.PixelCopy
 import android.view.ViewGroup
 import com.mirbor.blurpeekpreview.AndroidUtils.getStatusBarHeight
 import kotlin.math.roundToInt
@@ -26,12 +30,16 @@ object NativeBlur {
             System.loadLibrary(LIBRARY_NAME)
             initialized = true
         } catch (e: Exception) {
-           e.printStackTrace()
+            e.printStackTrace()
         }
     }
 
     @Throws(RuntimeException::class)
-    fun getBlurredBackgroundBitmap(activity: Activity, includeStatusbar: Boolean = false): Bitmap {
+    fun getBlurredBackgroundBitmap(
+        activity: Activity,
+        includeStatusbar: Boolean = false,
+        blurredBmp: (Bitmap) -> Unit
+    ) {
         val decorView = activity.window.decorView
         val rootView = (decorView.rootView as ViewGroup).getChildAt(0)
 
@@ -39,30 +47,29 @@ object NativeBlur {
             throw RuntimeException("Uncorrected rootView of activity!")
         }
 
-        val internalBitmap = Bitmap.createBitmap(
-            rootView.width,
-            rootView.height,
-            Bitmap.Config.ARGB_8888
-        )
+        rootView.toBitmap(
+            onBitmapReady = {
+                val internalCanvas = Canvas(it)
+                decorView.background.draw(internalCanvas)
+                rootView.draw(internalCanvas)
 
-        val internalCanvas = Canvas(internalBitmap)
+                val croppedBpm = Bitmap.createBitmap(
+                    it,
+                    0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
+                    it.width,
+                    it.height - if (!includeStatusbar) {
+                        activity.getStatusBarHeight()
+                    } else {
+                        0
+                    }
+                )
 
-        decorView.background.draw(internalCanvas)
-
-        rootView.draw(internalCanvas)
-
-        val croppedBpm = Bitmap.createBitmap(
-            internalBitmap,
-            0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
-            internalBitmap.width,
-            internalBitmap.height - if (!includeStatusbar) {
-                activity.getStatusBarHeight()
-            } else {
-                0
+                blurredBmp.invoke(blurBitmap(croppedBpm))
+            },
+            onBitmapError = {
+                it.printStackTrace()
             }
         )
-
-        return blurBitmap(croppedBpm)
     }
 
     /**
