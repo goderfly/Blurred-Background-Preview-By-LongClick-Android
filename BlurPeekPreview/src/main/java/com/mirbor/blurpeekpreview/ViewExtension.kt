@@ -1,35 +1,31 @@
-package com.mirbor.blurpreview
+package com.mirbor.blurpeekpreview
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.mirbor.blurpreview.AndroidUtils.dp
+import com.mirbor.blurpeekpreview.AndroidUtils.dp
 
 
 @SuppressLint("ClickableViewAccessibility")
 fun View.setBlurredPeekFragment(
     fragmentManager: FragmentManager,
-    fragment: FullscreenDialogFragment,
-    swipeIgnoreBottomPadding: Int = 14.dp
+    fragment: com.mirbor.blurpeekpreview.FullscreenDialogFragment,
+    swipeIgnoreBottomPadding: Int = 48.dp,
+    swipeMaximizeLength: Int = 48.dp
 ) {
-    //var lastY = 0f
-    //var startY = 0f
     var startRowY = 0
     var lastRowY = 0
     var isReachMaximizedState = false
-    var calculatedSwipeIgnoreBottomPadding = 0
+    var isBottomPaddingCalculated = false
 
     setOnLongClickListener {
-        //startRowY = lastRowY
-        calculatedSwipeIgnoreBottomPadding = 0
+        isBottomPaddingCalculated = false
         fragment.show(fragmentManager, fragment.javaClass.name)
         return@setOnLongClickListener true
     }
 
     setOnTouchListener { _, motionEvent ->
-        //lastY = motionEvent.y
         lastRowY = motionEvent.rawY.toInt()
 
         when (motionEvent.action) {
@@ -50,19 +46,16 @@ fun View.setBlurredPeekFragment(
 
             MotionEvent.ACTION_MOVE -> {
                 if (fragment.isVisible) {
-                    if (calculatedSwipeIgnoreBottomPadding == 0 && startRowY > fragment.getYBottomRaw()) {
-                        calculatedSwipeIgnoreBottomPadding = fragment.getYBottomRaw() - swipeIgnoreBottomPadding
+                    fragment.onChangePeekCoordrinates(motionEvent.rawX, motionEvent.rawY)
+
+                    if (!isBottomPaddingCalculated && startRowY > fragment.getYBottomRaw()) {
+                        isBottomPaddingCalculated = true
                         startRowY = fragment.getYBottomRaw() - swipeIgnoreBottomPadding
                     }
-                    fragment.onChangePeekCoordrinates(motionEvent.rawX, motionEvent.rawY)
+
                     val diff = (startRowY  - lastRowY)
 
-                    Log.d("Bluuur", "" +
-                            "startRawY $startRowY" +
-                            " calculatedSwipeIgnoreBottomPadding ${calculatedSwipeIgnoreBottomPadding} " +
-                            "lastRawY $lastRowY")
-
-                    if (diff > 400 && !isReachMaximizedState) {
+                    if (diff > swipeMaximizeLength && !isReachMaximizedState) {
                         fragment.onPeekMaximized()
                         isReachMaximizedState = true
                         return@setOnTouchListener true

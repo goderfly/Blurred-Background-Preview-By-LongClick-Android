@@ -1,7 +1,7 @@
-package com.mirbor.blurpreview
+package com.mirbor.blurpeekpreview
 
+import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
@@ -24,10 +24,9 @@ object AndroidUtils {
         }
     }
 
-    internal fun getStatusBarHeight(): Int {
-        val resourceId =
-            App.appContext!!.resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (resourceId > 0) App.appContext!!.resources.getDimensionPixelSize(resourceId) else 0
+    internal fun Context.getStatusBarHeight(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
     }
 
     internal fun View.getYBottomRaw(): Int {

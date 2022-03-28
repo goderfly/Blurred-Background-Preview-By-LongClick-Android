@@ -8,7 +8,7 @@
 
 extern "C" {
 JNIEXPORT jint
-Java_com_mirbor_blurpreview_NativeBlur_fastBlurAlpha(JNIEnv *env, jobject clazz, jobject bitmap,
+Java_com_mirbor_blurpeekpreview_NativeBlur_fastBlurAlpha(JNIEnv *env, jobject clazz, jobject bitmap,
                                                      jint radius) {
     if (radius < 1) {
         return INVALID_RADIUS;

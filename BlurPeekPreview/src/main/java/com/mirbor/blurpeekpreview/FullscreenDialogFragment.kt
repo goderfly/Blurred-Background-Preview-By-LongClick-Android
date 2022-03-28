@@ -1,4 +1,4 @@
-package com.mirbor.blurpreview
+package com.mirbor.blurpeekpreview
 
 import android.content.DialogInterface
 import android.graphics.Bitmap
@@ -7,10 +7,10 @@ import android.view.*
 import android.widget.FrameLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
-import com.mirbor.blurpreview.AndroidUtils.disallowClipForParents
-import com.mirbor.blurpreview.AndroidUtils.getChildViewListFromViewGroup
-import com.mirbor.blurpreview.AndroidUtils.getYBottomRaw
-import com.mirbor.blurpreview.AndroidUtils.getFirstViewFromViewGroup
+import com.mirbor.blurpeekpreview.AndroidUtils.disallowClipForParents
+import com.mirbor.blurpeekpreview.AndroidUtils.getChildViewListFromViewGroup
+import com.mirbor.blurpeekpreview.AndroidUtils.getFirstViewFromViewGroup
+import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 
 abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {

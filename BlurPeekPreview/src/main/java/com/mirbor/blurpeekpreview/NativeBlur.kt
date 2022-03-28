@@ -1,10 +1,4 @@
-/*
-*
-* Copyright (c) 2021 Abolfazl Abbasi
-*
-* */
-
-package com.mirbor.blurpreview
+package com.mirbor.blurpeekpreview
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -13,8 +7,8 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.Log
 import android.view.ViewGroup
+import com.mirbor.blurpeekpreview.AndroidUtils.getStatusBarHeight
 import kotlin.math.roundToInt
-
 
 object NativeBlur {
     private const val SUCCESS = 1
@@ -59,10 +53,10 @@ object NativeBlur {
 
         val croppedBpm = Bitmap.createBitmap(
             internalBitmap,
-            0, if (!includeStatusbar) AndroidUtils.getStatusBarHeight() else 0,
+            0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
             internalBitmap.width,
             internalBitmap.height - if (!includeStatusbar) {
-                AndroidUtils.getStatusBarHeight()
+                activity.getStatusBarHeight()
             } else {
                 0
             }
@@ -133,7 +127,10 @@ object NativeBlur {
         val endTime = System.currentTimeMillis()
         when (result) {
             SUCCESS -> {
-                Log.i("NativeBlur", "Blur has done successfully with radius:$radius at:${endTime - startTime}ms in compress:$compress")
+                Log.i(
+                    "NativeBlur",
+                    "Blur has done successfully with radius:$radius at:${endTime - startTime}ms in compress:$compress"
+                )
             }
             INVALID_RADIUS -> {
                 Log.i("NativeBlur", "INVALID_RADIUS $radius")

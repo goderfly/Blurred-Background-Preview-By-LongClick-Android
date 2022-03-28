@@ -1,4 +1,4 @@
-package com.mirbor.blurpreview
+package com.mirbor.blurpeekpreview
 
 import android.view.View
 
