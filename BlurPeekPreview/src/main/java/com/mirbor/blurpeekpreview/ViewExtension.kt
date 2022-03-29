@@ -32,6 +32,7 @@ fun View.setBlurredPeekFragment(
         isBottomPaddingCalculated = false
         fragment.show(fragmentManager, fragment.javaClass.name)
         fragment.setHorizontalPadding(horizontalPadding)
+        fragment.setInitiatedView(this)
         return@setOnLongClickListener true
     }
 

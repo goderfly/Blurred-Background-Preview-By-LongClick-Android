@@ -18,6 +18,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
     private var horizontalPadding: Int = 0
     private lateinit var blurredBmp: Bitmap
     internal var currentIntersectedView: View? = null
+    internal var currentInitiatedView: View? = null
     private var verDetectPadding: Int = 0
     private var horDetectPadding: Int = 0
 
@@ -85,6 +86,10 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
 
     internal fun setHorizontalPadding(horizontalPadding: Int) {
         this.horizontalPadding = horizontalPadding
+    }
+
+    internal fun setInitiatedView(initiatedView: View) {
+        this.currentInitiatedView = initiatedView
     }
 
     internal fun getYBottomRaw(): Int {
