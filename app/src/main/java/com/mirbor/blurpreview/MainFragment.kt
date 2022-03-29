@@ -1,14 +1,14 @@
 package com.mirbor.blurpreview
 
-import android.R.attr.data
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mirbor.blurpeekpreview.AndroidUtils.dp
-import com.mirbor.blurpeekpreview.setBlurredPeekFragment
+import com.mirbor.blurpeekpreview.setOnLongClickBlurredPeekFragment
 import com.mirbor.blurpreview.databinding.MainFragmentBinding
 
 
@@ -55,11 +55,14 @@ class MainFragment : Fragment() {
         binding.recycler.layoutManager = GridLayoutManager(requireContext(), 3)
         val adapter = SampleRecyclerViewAdapter(requireContext(), list) {
             val fragment = SampleDialogFragment.newInstance()
-            it.setBlurredPeekFragment(
+            it.setOnLongClickBlurredPeekFragment(
                 fragmentManager = parentFragmentManager,
                 fragment = fragment,
                 horizontalPadding = 16.dp
             )
+            it.setOnClickListener {
+                Log.d("Bluuu", "CLICK!!!!!!")
+            }
         }
 
         adapter.setClickListener(object: View.OnClickListener, SampleRecyclerViewAdapter.ItemClickListener {
