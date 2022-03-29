@@ -14,38 +14,14 @@ import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 
 abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
+    private lateinit var blurredBmp: Bitmap
     internal var currentIntersectedView: View? = null
     private var verDetectPadding: Int = 0
     private var horDetectPadding: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NativeBlur.getBlurredBackgroundBitmap(requireActivity()) {
-            dialog!!.window?.apply {
-
-                    decorView.apply {
-                        minimumWidth = requireActivity().window.decorView.width
-                        minimumHeight = requireActivity().window.decorView.height
-
-                        getFirstViewFromViewGroup()
-                            .apply { disallowClipForParents() }
-                            .apply {
-                                layoutParams = FrameLayout.LayoutParams(
-                                    FrameLayout.LayoutParams.MATCH_PARENT,
-                                    FrameLayout.LayoutParams.MATCH_PARENT
-                                ).apply {
-                                    gravity = Gravity.CENTER
-                                }
-                            }
-
-                    }
-                    setBackgroundDrawable(it.toDrawable(requireContext().resources))
-                    addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                    setDimAmount(0f)
-
-            }
-
-        }
+        blurredBmp = NativeBlur.getBlurredBackgroundBitmap(requireActivity())
     }
 
     override fun onStart() {
@@ -76,7 +52,27 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
                 }
                 false
             })
+            dialog!!.window?.apply {
+                decorView.apply {
+                    minimumWidth = requireActivity().window.decorView.width
+                    minimumHeight = requireActivity().window.decorView.height
 
+                    getFirstViewFromViewGroup()
+                        .apply { disallowClipForParents() }
+                        .apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            ).apply {
+                                gravity = Gravity.CENTER
+                            }
+                        }
+
+                }
+                setBackgroundDrawable(blurredBmp.toDrawable(requireContext().resources))
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                setDimAmount(0f)
+            }
         }
 
         return super.onCreateView(inflater, container, savedInstanceState)

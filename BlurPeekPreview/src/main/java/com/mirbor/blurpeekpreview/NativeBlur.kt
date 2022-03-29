@@ -37,9 +37,8 @@ object NativeBlur {
     @Throws(RuntimeException::class)
     fun getBlurredBackgroundBitmap(
         activity: Activity,
-        includeStatusbar: Boolean = false,
-        blurredBmp: (Bitmap) -> Unit
-    ) {
+        includeStatusbar: Boolean = false
+    ): Bitmap {
         val decorView = activity.window.decorView
         val rootView = (decorView.rootView as ViewGroup).getChildAt(0)
 
@@ -47,29 +46,30 @@ object NativeBlur {
             throw RuntimeException("Uncorrected rootView of activity!")
         }
 
-        rootView.toBitmap(
-            onBitmapReady = {
-                val internalCanvas = Canvas(it)
-                decorView.background.draw(internalCanvas)
-                rootView.draw(internalCanvas)
+        val internalBitmap = Bitmap.createBitmap(
+            rootView.width,
+            rootView.height,
+            Bitmap.Config.ARGB_8888
+        )
 
-                val croppedBpm = Bitmap.createBitmap(
-                    it,
-                    0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
-                    it.width,
-                    it.height - if (!includeStatusbar) {
-                        activity.getStatusBarHeight()
-                    } else {
-                        0
-                    }
-                )
+        val internalCanvas = Canvas(internalBitmap)
 
-                blurredBmp.invoke(blurBitmap(croppedBpm))
-            },
-            onBitmapError = {
-                it.printStackTrace()
+        decorView.background.draw(internalCanvas)
+
+        rootView.draw(internalCanvas)
+
+        val croppedBpm = Bitmap.createBitmap(
+            internalBitmap,
+            0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
+            internalBitmap.width,
+            internalBitmap.height - if (!includeStatusbar) {
+                activity.getStatusBarHeight()
+            } else {
+                0
             }
         )
+
+        return blurBitmap(croppedBpm)
     }
 
     /**
