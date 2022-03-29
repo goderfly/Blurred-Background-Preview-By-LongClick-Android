@@ -13,7 +13,7 @@ import com.mirbor.blurpeekpreview.AndroidUtils.getFirstViewFromViewGroup
 import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 
-abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
+abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
     private lateinit var blurredBmp: Bitmap
     internal var currentIntersectedView: View? = null
     private var verDetectPadding: Int = 0
@@ -27,10 +27,7 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
     override fun onStart() {
         super.onStart()
         dialog!!.window?.apply {
-            attributes = attributes?.apply {
-                dimAmount = 0.10f
-                flags = flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND
-            }
+            setDimAmount(0.0f)
         }
     }
 
@@ -52,7 +49,9 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
                 }
                 false
             })
-            dialog!!.window?.apply {
+            window?.apply {
+                setBackgroundDrawable(blurredBmp.toDrawable(requireContext().resources))
+
                 decorView.apply {
                     minimumWidth = requireActivity().window.decorView.width
                     minimumHeight = requireActivity().window.decorView.height
@@ -69,9 +68,6 @@ abstract class FullscreenDialogFragment : DialogFragment(), IBlurredPeekFragment
                         }
 
                 }
-                setBackgroundDrawable(blurredBmp.toDrawable(requireContext().resources))
-                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                setDimAmount(0f)
             }
         }
 

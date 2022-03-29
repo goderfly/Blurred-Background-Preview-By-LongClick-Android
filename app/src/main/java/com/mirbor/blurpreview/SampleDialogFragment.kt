@@ -7,11 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.mirbor.blurpeekpreview.FullscreenDialogFragment
+import com.mirbor.blurpeekpreview.BlurredPeekDialogFragment
 import com.mirbor.blurpreview.databinding.BlurredFragmentBinding
 
 
-class SampleFragment : FullscreenDialogFragment() {
+class SampleDialogFragment : BlurredPeekDialogFragment() {
     private var _binding: BlurredFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -64,8 +64,8 @@ class SampleFragment : FullscreenDialogFragment() {
 
     companion object {
 
-        fun newInstance(): SampleFragment {
-            return SampleFragment()
+        fun newInstance(): SampleDialogFragment {
+            return SampleDialogFragment()
         }
 
     }

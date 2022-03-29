@@ -1,11 +1,9 @@
 package com.mirbor.blurpreview
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.mirbor.blurpeekpreview.setBlurredPeekFragment
 import com.mirbor.blurpreview.databinding.MainFragmentBinding
@@ -27,7 +25,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val fragment = SampleFragment.newInstance()
+        val fragment = SampleDialogFragment.newInstance()
         binding.button.setBlurredPeekFragment(
             fragmentManager = parentFragmentManager,
             fragment = fragment
