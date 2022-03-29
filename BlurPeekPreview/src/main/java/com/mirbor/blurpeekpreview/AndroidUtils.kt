@@ -2,8 +2,10 @@ package com.mirbor.blurpeekpreview
 
 import android.content.Context
 import android.content.res.Resources
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.view.children
 
 object AndroidUtils {
@@ -40,6 +42,7 @@ object AndroidUtils {
 
     val Float.dp: Int
         get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
 }
 
 

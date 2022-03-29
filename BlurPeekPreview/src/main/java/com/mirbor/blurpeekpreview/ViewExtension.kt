@@ -18,9 +18,10 @@ import com.mirbor.blurpeekpreview.AndroidUtils.dp
 @SuppressLint("ClickableViewAccessibility")
 fun View.setBlurredPeekFragment(
     fragmentManager: FragmentManager,
-    fragment: com.mirbor.blurpeekpreview.BlurredPeekDialogFragment,
+    fragment: BlurredPeekDialogFragment,
     swipeIgnoreBottomPadding: Int = 48.dp,
-    swipeMaximizeLength: Int = 48.dp
+    swipeMaximizeLength: Int = 48.dp,
+    horizontalPadding: Int = 16.dp
 ) {
     var startRowY = 0
     var lastRowY = 0
@@ -30,6 +31,7 @@ fun View.setBlurredPeekFragment(
     setOnLongClickListener {
         isBottomPaddingCalculated = false
         fragment.show(fragmentManager, fragment.javaClass.name)
+        fragment.setHorizontalPadding(horizontalPadding)
         return@setOnLongClickListener true
     }
 

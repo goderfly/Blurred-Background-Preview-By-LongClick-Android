@@ -1,6 +1,7 @@
 package com.mirbor.blurpeekpreview
 
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
@@ -14,6 +15,7 @@ import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 
 abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
+    private var horizontalPadding: Int = 0
     private lateinit var blurredBmp: Bitmap
     internal var currentIntersectedView: View? = null
     private var verDetectPadding: Int = 0
@@ -31,17 +33,12 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
         }
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         dialog?.apply {
-
             setOnKeyListener(DialogInterface.OnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                     dialog?.onBackPressed()
@@ -50,18 +47,23 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
                 false
             })
             window?.apply {
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 setBackgroundDrawable(blurredBmp.toDrawable(requireContext().resources))
 
                 decorView.apply {
-                    minimumWidth = requireActivity().window.decorView.width
-                    minimumHeight = requireActivity().window.decorView.height
+                    attributes = WindowManager.LayoutParams().apply {
+                        copyFrom(window!!.attributes)
+                        width = WindowManager.LayoutParams.MATCH_PARENT
+                        height = WindowManager.LayoutParams.MATCH_PARENT
+                    }
 
+                    requestLayout()
                     getFirstViewFromViewGroup()
                         .apply { disallowClipForParents() }
                         .apply {
                             layoutParams = FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT,
-                                FrameLayout.LayoutParams.MATCH_PARENT
+                                Resources.getSystem().displayMetrics.widthPixels - (horizontalPadding * 2),
+                                FrameLayout.LayoutParams.WRAP_CONTENT
                             ).apply {
                                 gravity = Gravity.CENTER
                             }
@@ -69,15 +71,20 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
 
                 }
             }
+
         }
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
 
-    internal fun setViewsPeekDetectPadding(horDetectPadding: Int, verDetectPadding: Int) {
+    internal fun setHorizontalPadding(horDetectPadding: Int, verDetectPadding: Int) {
         this.verDetectPadding = horDetectPadding
         this.horDetectPadding = verDetectPadding
+    }
+
+    internal fun setHorizontalPadding(horizontalPadding: Int) {
+        this.horizontalPadding = horizontalPadding
     }
 
     internal fun getYBottomRaw(): Int {

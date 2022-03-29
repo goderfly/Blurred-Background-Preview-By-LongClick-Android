@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.mirbor.blurpeekpreview.AndroidUtils.dp
 import com.mirbor.blurpeekpreview.setBlurredPeekFragment
 import com.mirbor.blurpreview.databinding.MainFragmentBinding
 
@@ -28,12 +29,14 @@ class MainFragment : Fragment() {
         val fragment = SampleDialogFragment.newInstance()
         binding.button.setBlurredPeekFragment(
             fragmentManager = parentFragmentManager,
-            fragment = fragment
+            fragment = fragment,
+            horizontalPadding = 16.dp
         )
 
         binding.button4.setBlurredPeekFragment(
             fragmentManager = parentFragmentManager,
-            fragment = fragment
+            fragment = fragment,
+            horizontalPadding = 16.dp
         )
     }
 
