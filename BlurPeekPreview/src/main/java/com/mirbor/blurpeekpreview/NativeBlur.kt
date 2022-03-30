@@ -54,7 +54,7 @@ object NativeBlur {
 
         val internalCanvas = Canvas(internalBitmap)
 
-        decorView.background.draw(internalCanvas)
+        //decorView.background.draw(internalCanvas)
 
         rootView.draw(internalCanvas)
 
