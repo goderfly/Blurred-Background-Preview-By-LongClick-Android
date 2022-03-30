@@ -50,11 +50,11 @@ object NativeBlur {
             rootView.width,
             rootView.height,
             Bitmap.Config.ARGB_8888
-        )
+        ).copy(Bitmap.Config.ARGB_8888, true)
 
         val internalCanvas = Canvas(internalBitmap)
 
-        //decorView.background.draw(internalCanvas)
+        decorView.background.draw(internalCanvas)
 
         rootView.draw(internalCanvas)
 
