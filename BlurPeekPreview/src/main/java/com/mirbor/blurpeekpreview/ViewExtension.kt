@@ -1,21 +1,14 @@
 package com.mirbor.blurpeekpreview
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ContextWrapper
-import android.graphics.Bitmap
-import android.graphics.Rect
-import android.os.Build
 import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.view.*
-import android.widget.ScrollView
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.children
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mirbor.blurpeekpreview.AndroidUtils.dp
-import com.mirbor.blurpeekpreview.AndroidUtils.getContextActivity
 import com.mirbor.blurpeekpreview.AndroidUtils.getDecorViewAsViewGroup
 
 
@@ -38,7 +31,7 @@ fun View.setOnLongClickBlurredPeekFragment(
         fragment.show(fragmentManager, fragment.javaClass.name)
         fragment.setHorizontalPadding(horizontalPadding)
         fragment.setInitiatedView(this)
-        getDecorViewAsViewGroup().suppressChildsRecyclerView(true)
+        getDecorViewAsViewGroup().setViewAndChildrenEnabled(false)
     }
 
 
@@ -60,7 +53,7 @@ fun View.setOnLongClickBlurredPeekFragment(
                         fragment.onPeekChooseView(it)
                     }
                 }
-                getDecorViewAsViewGroup().suppressChildsRecyclerView(false)
+                getDecorViewAsViewGroup().setViewAndChildrenEnabled(true)
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -97,6 +90,15 @@ fun ViewGroup.suppressChildsRecyclerView(supress: Boolean) {
         }
         if (it is RecyclerView) {
             it.suppressLayout(supress)
+        }
+    }
+}
+
+private fun View.setViewAndChildrenEnabled(enabled: Boolean) {
+    isEnabled = enabled
+    if (this is ViewGroup) {
+        for (i in 0 until this.childCount) {
+            this.getChildAt(i).setViewAndChildrenEnabled(enabled)
         }
     }
 }
