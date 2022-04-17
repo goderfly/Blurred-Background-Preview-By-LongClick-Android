@@ -31,7 +31,7 @@ fun View.setOnLongClickBlurredPeekFragment(
         fragment.show(fragmentManager, fragment.javaClass.name)
         fragment.setHorizontalPadding(horizontalPadding)
         fragment.setInitiatedView(this)
-        getDecorViewAsViewGroup().setViewAndChildrenEnabled(false)
+        getDecorViewAsViewGroup().setViewAndChildrenEnabled(this, false)
     }
 
 
@@ -53,7 +53,7 @@ fun View.setOnLongClickBlurredPeekFragment(
                         fragment.onPeekChooseView(it)
                     }
                 }
-                getDecorViewAsViewGroup().setViewAndChildrenEnabled(true)
+                getDecorViewAsViewGroup().setViewAndChildrenEnabled(this, true)
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -94,11 +94,13 @@ fun ViewGroup.suppressChildsRecyclerView(supress: Boolean) {
     }
 }
 
-private fun View.setViewAndChildrenEnabled(enabled: Boolean) {
-    isEnabled = enabled
-    if (this is ViewGroup) {
-        for (i in 0 until this.childCount) {
-            this.getChildAt(i).setViewAndChildrenEnabled(enabled)
+private fun View.setViewAndChildrenEnabled(exceptView: View, enabled: Boolean) {
+    if (this != exceptView) {
+        isEnabled = enabled
+        if (this is ViewGroup) {
+            for (i in 0 until this.childCount) {
+                this.getChildAt(i).setViewAndChildrenEnabled(this, enabled)
+            }
         }
     }
 }
