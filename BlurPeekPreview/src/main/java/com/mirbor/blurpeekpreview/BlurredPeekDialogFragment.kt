@@ -24,7 +24,13 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        blurredBmp = NativeBlur.getBlurredBackgroundBitmap(requireActivity())
+        NativeBlur.getBlurredBackgroundBitmap(requireActivity(),
+            onBitmapReady = {
+                blurredBmp = it
+            },
+            onBitmapError = {
+
+            })
     }
 
     override fun onStart() {

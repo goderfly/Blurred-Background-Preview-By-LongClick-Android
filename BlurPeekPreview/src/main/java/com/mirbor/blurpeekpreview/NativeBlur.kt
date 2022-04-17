@@ -1,16 +1,16 @@
 package com.mirbor.blurpeekpreview
 
 import android.app.Activity
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.PixelCopy
+import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import com.mirbor.blurpeekpreview.AndroidUtils.dp
 import com.mirbor.blurpeekpreview.AndroidUtils.getStatusBarHeight
 import kotlin.math.roundToInt
 
@@ -37,41 +37,61 @@ object NativeBlur {
     @Throws(RuntimeException::class)
     fun getBlurredBackgroundBitmap(
         activity: Activity,
-        includeStatusbar: Boolean = false
-    ): Bitmap {
-        val decorView = activity.window.decorView
-        val rootView = (decorView.rootView as ViewGroup).getChildAt(0)
+        onBitmapReady: (Bitmap) -> Unit,
+        onBitmapError: (Exception) -> Unit
+    ) {
+        val rootView = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
+        val statusbarHeight = activity.getStatusBarHeight() + 9.dp
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val temporalBitmap = Bitmap.createBitmap(rootView.width, rootView.height - statusbarHeight, Bitmap.Config.ARGB_8888)
 
-        if (rootView.width <= 0 || rootView.height <= 0) {
-            throw RuntimeException("Uncorrected rootView of activity!")
+                val location = IntArray(2)
+                rootView.getLocationInWindow(location)
+                val left = location[0]
+                val top = location[1] + statusbarHeight
+                val right = location[0] + rootView.width
+                val bottom = location[1] + (rootView.height)
+
+                val viewRectangle = Rect(left, top, right, bottom)
+
+                val onPixelCopyListener: PixelCopy.OnPixelCopyFinishedListener =
+                    PixelCopy.OnPixelCopyFinishedListener { copyResult ->
+                        if (copyResult == PixelCopy.SUCCESS) {
+                            val blurredBmp = blurBitmap(temporalBitmap)
+                            onBitmapReady(blurredBmp)
+                        } else {
+                            error("Error while copying pixels, copy result: $copyResult")
+                        }
+                    }
+                PixelCopy.request(
+                    activity.window,
+                    viewRectangle,
+                    temporalBitmap,
+                    onPixelCopyListener,
+                    Handler(Looper.getMainLooper())
+                )
+            } else {
+                val temporalBitmap = Bitmap.createBitmap(rootView.width, rootView.height, Bitmap.Config.RGB_565)
+                val canvas = Canvas(temporalBitmap.shrinkStatusBar(activity))
+                rootView.draw(canvas)
+                canvas.setBitmap(null)
+                onBitmapReady(temporalBitmap)
+            }
+
+        } catch (exception: Exception) {
+            onBitmapError(exception)
         }
 
-        val internalBitmap = Bitmap.createBitmap(
-            rootView.width,
-            rootView.height,
-            Bitmap.Config.ARGB_8888
-        ).copy(Bitmap.Config.ARGB_8888, true)
-
-        val internalCanvas = Canvas(internalBitmap)
-
-        decorView.background.draw(internalCanvas)
-
-        rootView.draw(internalCanvas)
-
-        val croppedBpm = Bitmap.createBitmap(
-            internalBitmap,
-            0, if (!includeStatusbar) activity.getStatusBarHeight() else 0,
-            internalBitmap.width,
-            internalBitmap.height - if (!includeStatusbar) {
-                activity.getStatusBarHeight()
-            } else {
-                0
-            }
-        )
-
-        return blurBitmap(croppedBpm)
     }
+    fun Bitmap.shrinkStatusBar(activity: Activity): Bitmap {
 
+        val x = 0
+        val y = activity.getStatusBarHeight()
+        val width = this.width
+        val height = this.height - activity.getStatusBarHeight()
+        return Bitmap.createBitmap(this, x, y, width, height)
+    }
     /**
      * Returns a blurred bitmap with the specified radius and compress. Its
      * call native C++ method
@@ -83,7 +103,7 @@ object NativeBlur {
      */
 
     @Throws(RuntimeException::class)
-    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 8, compress: Boolean = true): Bitmap {
+    fun blurBitmap(sourceBitmap: Bitmap, radius: Int = 6, compress: Boolean = true): Bitmap {
         if (!initialized) {
             throw RuntimeException("First init NativeBlur lib.")
         }

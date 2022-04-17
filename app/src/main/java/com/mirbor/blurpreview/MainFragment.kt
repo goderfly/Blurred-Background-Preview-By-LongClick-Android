@@ -30,8 +30,8 @@ class MainFragment : Fragment() {
 
 
         val list = mutableListOf<Movie>().apply {
-            add(Movie(url = "https://cdn.lorem.space/images/movie/.cache/150x220/kill-bill-2003.jpg", name = "SampleFilm1"))
-            add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=B0E33EF4", name = "SampleFilm2"))
+            add(Movie(url = "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/4057c4b8-8208-4a04-b169-26b0661453e3/68x102", name = "SampleFilm1"))
+            add(Movie(url = "https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/0b76b2a2-d1c7-4f04-a284-80ff7bb709a4/68x102", name = "SampleFilm2"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=4F32C4CF", name = "SampleFilm3"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=7F5AE56A", name = "SampleFilm4"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=BDC01094", name = "SampleFilm5"))
@@ -40,7 +40,7 @@ class MainFragment : Fragment() {
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=A89D0DE6", name = "SampleFilm8"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=500B67FB", name = "SampleFilm9"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=8B7BCDC2", name = "SampleFilm0"))
-            add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=2D297A22", name = "SampleFilm11"))
+            add(Movie(url = "https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/b327ada7-d790-49ae-8b24-374497a0980c/68x102", name = "SampleFilm11"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=B0E33EF4", name = "SampleFilm12"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=4F32C4CF", name = "SampleFilm13"))
             add(Movie(url = "https://api.lorem.space/image/movie?w=150&h=220&hash=7F5AE56A", name = "SampleFilm14"))
