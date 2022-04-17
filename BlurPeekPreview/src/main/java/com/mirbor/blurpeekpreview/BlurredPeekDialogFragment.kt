@@ -16,7 +16,6 @@ import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
     private var horizontalPadding: Int = 0
-    private lateinit var blurredBmp: Bitmap
     internal var currentIntersectedView: View? = null
     internal var currentInitiatedView: View? = null
     private var verDetectPadding: Int = 0
@@ -26,10 +25,10 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
         super.onCreate(savedInstanceState)
         NativeBlur.getBlurredBackgroundBitmap(requireActivity(),
             onBitmapReady = {
-                blurredBmp = it
+                dialog?.window?.setBackgroundDrawable(it.toDrawable(requireContext().resources))
             },
             onBitmapError = {
-
+                it.printStackTrace()
             })
     }
 
@@ -55,7 +54,6 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
             })
             window?.apply {
                 addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                setBackgroundDrawable(blurredBmp.toDrawable(requireContext().resources))
 
                 decorView.apply {
                     attributes = WindowManager.LayoutParams().apply {
