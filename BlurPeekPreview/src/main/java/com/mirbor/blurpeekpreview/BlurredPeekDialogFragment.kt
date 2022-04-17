@@ -4,32 +4,40 @@ import android.content.DialogInterface
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import com.mirbor.blurpeekpreview.AndroidUtils.disallowClipForParents
-import com.mirbor.blurpeekpreview.AndroidUtils.getChildViewListFromViewGroup
 import com.mirbor.blurpeekpreview.AndroidUtils.getFirstViewFromViewGroup
 import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
 
 abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmentInteraction {
+    private var blurredBmp: Bitmap? = null
     private var horizontalPadding: Int = 0
     internal var currentIntersectedView: View? = null
-    internal var currentInitiatedView: View? = null
+    private var currentInitiatedView: View? = null
     private var verDetectPadding: Int = 0
     private var horDetectPadding: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NativeBlur.getBlurredBackgroundBitmap(requireActivity(),
+        NativeBlur.getBlurredBackgroundBitmap(
+            requireActivity(),
             onBitmapReady = {
-                dialog?.window?.setBackgroundDrawable(it.toDrawable(requireContext().resources))
+                blurredBmp = it
+                dialog?.window?.apply {
+                    setBackgroundDrawable(blurredBmp?.toDrawable(requireContext().resources))
+                }
             },
             onBitmapError = {
                 it.printStackTrace()
-            })
+            }
+        )
+
+
     }
 
     override fun onStart() {
@@ -44,6 +52,8 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("blur", "onCreateView")
+        Log.d("blur", " onCreate inside callback start")
         dialog?.apply {
             setOnKeyListener(DialogInterface.OnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
@@ -54,6 +64,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
             })
             window?.apply {
                 addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                setBackgroundDrawable(blurredBmp?.toDrawable(requireContext().resources))
 
                 decorView.apply {
                     attributes = WindowManager.LayoutParams().apply {
@@ -78,7 +89,6 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
             }
 
         }
-
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -106,7 +116,9 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
     }
 
     internal fun onChangePeekCoordrinates(x: Float, y: Float) {
-        view?.getChildViewListFromViewGroup()?.forEach {
+        Log.d("blur", "onChangePeekCoordrinates x$x y$y")
+        view?.getAllChildren()?.forEach {
+            Log.d("blur", "view $it")
 
             if (it.isIntersectWith(
                     rawX = x.toInt(),
@@ -122,6 +134,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
                     onPeekInteractWithView(it)
                 }
             }
+
         }
     }
 }

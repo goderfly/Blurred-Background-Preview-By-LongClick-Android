@@ -14,8 +14,6 @@ object AndroidUtils {
 
     internal fun View.getDecorViewAsViewGroup() = this.context.getContextActivity()?.window?.decorView as ViewGroup
 
-    internal fun View.getChildViewListFromViewGroup() = (this as? ViewGroup)?.children?.toList()
-
     internal tailrec fun View?.disallowClipForParents() {
         if (this is ViewGroup) {
             clipChildren = false

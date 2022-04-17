@@ -1,10 +1,15 @@
 package com.mirbor.blurpeekpreview
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.os.Build
 import android.os.Handler
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.os.Looper
+import android.util.Log
+import android.view.*
 import androidx.core.view.children
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +21,7 @@ import com.mirbor.blurpeekpreview.AndroidUtils.getDecorViewAsViewGroup
 fun View.setOnLongClickBlurredPeekFragment(
     fragmentManager: FragmentManager,
     fragment: BlurredPeekDialogFragment,
+    viewsToSuppress: List<View> = listOf(),
     swipeIgnoreBottomPadding: Int = 48.dp,
     swipeMaximizeLength: Int = 48.dp,
     horizontalPadding: Int = 16.dp
@@ -27,11 +33,12 @@ fun View.setOnLongClickBlurredPeekFragment(
     val handler = Handler()
 
     val longPressed = Runnable {
+        getDecorViewAsViewGroup().suppressChildsRecyclerView(true)
+        viewsToSuppress.suppress(true)
         isBottomPaddingCalculated = false
         fragment.show(fragmentManager, fragment.javaClass.name)
         fragment.setHorizontalPadding(horizontalPadding)
         fragment.setInitiatedView(this)
-        getDecorViewAsViewGroup().setViewAndChildrenEnabled(this, false)
     }
 
 
@@ -53,7 +60,8 @@ fun View.setOnLongClickBlurredPeekFragment(
                         fragment.onPeekChooseView(it)
                     }
                 }
-                getDecorViewAsViewGroup().setViewAndChildrenEnabled(this, true)
+                getDecorViewAsViewGroup().suppressChildsRecyclerView(false)
+                viewsToSuppress.suppress(false)
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -83,6 +91,19 @@ fun View.setOnLongClickBlurredPeekFragment(
 
 }
 
+fun View.getAllChildren(): List<View> {
+    val result = ArrayList<View>()
+    if (this !is ViewGroup) {
+        result.add(this)
+    } else {
+        for (index in 0 until this.childCount) {
+            val child = this.getChildAt(index)
+            result.addAll(child.getAllChildren())
+        }
+    }
+    return result
+}
+
 fun ViewGroup.suppressChildsRecyclerView(supress: Boolean) {
     children.forEach {
         if (it is ViewGroup) {
@@ -94,14 +115,9 @@ fun ViewGroup.suppressChildsRecyclerView(supress: Boolean) {
     }
 }
 
-private fun View.setViewAndChildrenEnabled(exceptView: View, enabled: Boolean) {
-    if (this != exceptView) {
-        isEnabled = enabled
-        if (this is ViewGroup) {
-            for (i in 0 until this.childCount) {
-                this.getChildAt(i).setViewAndChildrenEnabled(this, enabled)
-            }
-        }
+fun List<View>.suppress(supress: Boolean) {
+    this.forEach {
+        it.isEnabled = !supress
     }
 }
 
