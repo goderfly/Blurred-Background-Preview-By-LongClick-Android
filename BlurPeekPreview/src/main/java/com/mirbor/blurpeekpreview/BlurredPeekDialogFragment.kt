@@ -52,8 +52,6 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("blur", "onCreateView")
-        Log.d("blur", " onCreate inside callback start")
         dialog?.apply {
             setOnKeyListener(DialogInterface.OnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
@@ -116,10 +114,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
     }
 
     internal fun onChangePeekCoordrinates(x: Float, y: Float) {
-        Log.d("blur", "onChangePeekCoordrinates x$x y$y")
-        view?.getAllChildren()?.forEach {
-            Log.d("blur", "view $it")
-
+       view?.getAllChildren()?.forEach {
             if (it.isIntersectWith(
                     rawX = x.toInt(),
                     rawY = y.toInt(),

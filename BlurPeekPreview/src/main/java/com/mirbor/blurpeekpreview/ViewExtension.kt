@@ -80,7 +80,7 @@ fun View.setOnLongClickBlurredPeekFragment(
                         isReachMaximizedState = true
                         return@setOnTouchListener true
                     } else if (diff > 0) {
-                        fragment.onPeekMaximizeSwipe(diff)
+                        fragment.onPeekMaximizeSwipe(diff, swipeMaximizeLength)
                     }
                 }
             }
