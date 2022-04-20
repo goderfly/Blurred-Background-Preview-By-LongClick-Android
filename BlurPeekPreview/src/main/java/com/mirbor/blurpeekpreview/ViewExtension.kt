@@ -43,12 +43,10 @@ fun View.setOnLongClickBlurredPeekFragment(
     }
 
     this.doOnDetach {
-        Log.d("blur", "view detached $it")
         setOnTouchListener(null)
     }
 
     setOnTouchListener { _, motionEvent ->
-        Log.d("blur", "EVENT |$startRowY| $lastRowY | $isReachMaximizedState | $isBottomPaddingCalculated | $motionEvent")
         lastRowY = motionEvent.rawY.toInt()
 
         when (motionEvent.action) {
@@ -58,6 +56,10 @@ fun View.setOnLongClickBlurredPeekFragment(
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 handler.removeCallbacks(longPressed);
+                isReachMaximizedState = false
+                isBottomPaddingCalculated = false
+                startRowY = 0
+                lastRowY = 0
                 if (fragment.isResumed) {
                     isReachMaximizedState = false
                     fragment.onPeekDismiss()
@@ -82,8 +84,6 @@ fun View.setOnLongClickBlurredPeekFragment(
                     val diff = (startRowY - lastRowY)
 
                     if (diff > swipeMaximizeLength && !isReachMaximizedState) {
-                        Log.d("blur", "{diff > swipeMaximizeLength && !isReachMaximizedState} |$startRowY| $lastRowY | $isReachMaximizedState | $isBottomPaddingCalculated | $motionEvent")
-
                         fragment.onPeekMaximized()
                         isReachMaximizedState = true
                         return@setOnTouchListener true
