@@ -48,6 +48,7 @@ fun View.setOnLongClickBlurredPeekFragment(
     }
 
     setOnTouchListener { _, motionEvent ->
+        Log.d("blur", "EVENT |$startRowY| $lastRowY | $isReachMaximizedState | $isBottomPaddingCalculated | $motionEvent")
         lastRowY = motionEvent.rawY.toInt()
 
         when (motionEvent.action) {
@@ -81,6 +82,8 @@ fun View.setOnLongClickBlurredPeekFragment(
                     val diff = (startRowY - lastRowY)
 
                     if (diff > swipeMaximizeLength && !isReachMaximizedState) {
+                        Log.d("blur", "{diff > swipeMaximizeLength && !isReachMaximizedState} |$startRowY| $lastRowY | $isReachMaximizedState | $isBottomPaddingCalculated | $motionEvent")
+
                         fragment.onPeekMaximized()
                         isReachMaximizedState = true
                         return@setOnTouchListener true
