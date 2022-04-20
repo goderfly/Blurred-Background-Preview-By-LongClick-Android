@@ -46,7 +46,7 @@ class SampleDialogFragment : BlurredPeekDialogFragment() {
         dismiss()
     }
 
-    override fun onPeekMaximizeSwipe(yAxisOffset: Int) {
+    override fun onPeekMaximizeSwipe(yAxisOffset: Int, maxSwipeDistance: Int) {
         Log.d("Bluuur", "onPeekMaximizeSwipe $yAxisOffset")
         binding.root.translationY = -yAxisOffset.toFloat()
     }

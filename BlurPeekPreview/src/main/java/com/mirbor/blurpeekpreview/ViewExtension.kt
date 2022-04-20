@@ -11,6 +11,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.core.view.children
+import androidx.core.view.doOnDetach
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mirbor.blurpeekpreview.AndroidUtils.dp
@@ -41,6 +42,10 @@ fun View.setOnLongClickBlurredPeekFragment(
         fragment.setInitiatedView(this)
     }
 
+    this.doOnDetach {
+        Log.d("blur", "view detached $it")
+        setOnTouchListener(null)
+    }
 
     setOnTouchListener { _, motionEvent ->
         lastRowY = motionEvent.rawY.toInt()
