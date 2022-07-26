@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import com.mirbor.blurpeekpreview.AndroidUtils.disallowClipForParents
+import com.mirbor.blurpeekpreview.AndroidUtils.dp
 import com.mirbor.blurpeekpreview.AndroidUtils.getFirstViewFromViewGroup
 import com.mirbor.blurpeekpreview.AndroidUtils.getYBottomRaw
 
@@ -21,6 +22,10 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
     private var currentInitiatedView: View? = null
     private var verDetectPadding: Int = 0
     private var horDetectPadding: Int = 0
+
+    companion object {
+        var statusBarHeight = 9.dp
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +39,8 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
             },
             onBitmapError = {
                 it.printStackTrace()
-            }
+            },
+            statusBarHeight = BlurredPeekDialogFragment.statusBarHeight
         )
 
 
