@@ -43,10 +43,10 @@ object NativeBlur {
         onBitmapError: (Exception) -> Unit
     ) {
         val rootView = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
-        val statusbarHeight = activity.getStatusBarHeight() + statusBarHeight
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val temporalBitmap = Bitmap.createBitmap(rootView.width, rootView.height - statusbarHeight, Bitmap.Config.ARGB_8888)
+                val temporalBitmap = Bitmap.createBitmap(rootView.width, rootView.height - activity.getStatusBarHeight(), Bitmap.Config.ARGB_8888)
 
                 val location = IntArray(2)
                 rootView.getLocationInWindow(location)
