@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.Window
 import com.mirbor.blurpeekpreview.AndroidUtils.dp
 import com.mirbor.blurpeekpreview.AndroidUtils.getStatusBarHeight
+import com.mirbor.blurpeekpreview.BlurredPeekDialogFragment.Companion.statusBarHeight
 import kotlin.math.roundToInt
 
 object NativeBlur {
@@ -37,7 +38,7 @@ object NativeBlur {
     @Throws(RuntimeException::class)
     fun getBlurredBackgroundBitmap(
         activity: Activity,
-        statusBarHeight: Int = 9.dp,
+        statusBarHeight: Int,
         onBitmapReady: (Bitmap) -> Unit,
         onBitmapError: (Exception) -> Unit
     ) {
@@ -50,7 +51,8 @@ object NativeBlur {
                 val location = IntArray(2)
                 rootView.getLocationInWindow(location)
                 val left = location[0]
-                val top = location[1] + statusbarHeight
+                val top = location[1] + statusBarHeight
+                Log.d("asdf", "statusBarHeight + $statusBarHeight")
                 val right = location[0] + rootView.width
                 val bottom = location[1] + (rootView.height)
 

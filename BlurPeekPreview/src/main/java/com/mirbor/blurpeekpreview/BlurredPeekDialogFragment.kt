@@ -24,7 +24,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
     private var horDetectPadding: Int = 0
 
     companion object {
-        var statusBarHeight = 9.dp
+        var statusBarHeight = 42.dp
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,7 @@ abstract class BlurredPeekDialogFragment : DialogFragment(), IBlurredPeekFragmen
             onBitmapError = {
                 it.printStackTrace()
             },
-            statusBarHeight = BlurredPeekDialogFragment.statusBarHeight
+            statusBarHeight = statusBarHeight
         )
 
 
