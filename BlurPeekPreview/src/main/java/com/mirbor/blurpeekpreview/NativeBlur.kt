@@ -37,6 +37,7 @@ object NativeBlur {
     @Throws(RuntimeException::class)
     fun getBlurredBackgroundBitmap(
         activity: Activity,
+        statusBarHeight: Int = 9.dp,
         onBitmapReady: (Bitmap) -> Unit,
         onBitmapError: (Exception) -> Unit
     ) {
